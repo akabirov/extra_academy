@@ -7,10 +7,14 @@ require_once 'helpers.php'; // убрать. Уже есть в variables.php
 $errors = [];
 
 // все варианты проектов
-$query= "SELECT id, project_name FROM project";
+$query= "SELECT id, project_name FROM project"; // а зачем нам все проекты? Нужны только наши ..
 $result = mysqli_query($mysql, $query);
 $all_projects_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
+// массив, по коду, используется не всегда и в конце. Зачем его вычислять, если может он и не будет востребован ..
 
+// сначала нужно проверить: а была ли передача данным методом POST ..
+//если была, то включать код проверок
+// если нет то формировать данные для ввода задачи
 
 
 // проверка имени задачи
@@ -45,6 +49,8 @@ if (is_uploaded_file($_FILES['file']['tmp_name'])) { // была загрузк�
   if ($_FILES['file']['error'] === UPLOAD_ERR_OK) { // Если загружен файл и нет ошибок, то сохраняем его в папку UPLOAD_PATH
       $original_name = $_FILES['file']['name'];
       $url = 'uploads/' . $original_name;
+       // зачем в БД для всех записей хранить uploads/  ?
+      // "раздувать" БД ?
       $target = __DIR__  . '/uploads/' . $original_name;
 
       // сохраняем файл в папке UPLOAD_PATH_IMG
@@ -61,20 +67,28 @@ if (is_uploaded_file($_FILES['file']['tmp_name'])) { // была загрузк�
 // проверка на количество ошибок при переходе с метода post
 // и переадресация на главную
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $errors == false && $date) {  // $errors_counter == 0
-  $user_id = $user['id'];
+  $user_id = $user['id']; // а почему просто не сослаться в запросе на  $user['id'] ..
   $insert_in_task = "INSERT INTO task (task_name, dt_deadline, status_ready, user_id, project_id, file_path) VALUES ('$tname', '$date', false, $user_id, '$project', '$url')";
   mysqli_query($mysql, $insert_in_task);
 
   header("Location: /508085-doingsdone-12"); 
+      // глобальный вопрос:
+    // где-то в учебнике должно было написано про подготовленные запросы.
+    // их, особенно при записи в БД, нужно использовать
+    // в helpers.php есть функция mysqli_stmt()
+
+  header("Location: /508085-doingsdone-12");  // переходить на начало сайта должно по "/"
+
 } else {
     
     $add_temp = include_template(
-        'add_temp.php', [
-        'all_projects_arr' => $all_projects_arr,
-        'tname' => $tname,
-        'date' => $date,
-        'errors' => $errors
-  ]
+        'add_temp.php', 
+        [
+            'all_projects_arr' => $all_projects_arr,
+            'tname' => $tname,
+            'date' => $date,
+            'errors' => $errors,
+        ]
 );
 
 
