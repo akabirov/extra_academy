@@ -59,23 +59,24 @@ function count_hours($sample_date) {
 /**
 * Извлекает все из заданной таблицы с фильтрацией по заданному user_id, 
 * если таблица != project и есть get-параметр добавляет фильтрацию по проекту в get-параметре
-* @param $mysql переменная подключения
+* @param mysqli $mysql подключение к БД
 * @param string $base таблица
-* @param int $user_id идентификатор пользователя
+* @param int $user_id id пользователя
 * @return array 2-мерный массив
 */
-function base_extr($mysql, $base,$user_id) {
+function base_extr($mysql, $base, $user_id) {
 
-     $sample_query = "SELECT * FROM $base WHERE user_id = $user_id"; // получаем все из таблицы
+     $query = "SELECT * FROM $base WHERE user_id = $user_id"; // получаем все из таблицы
+    // не всё, а только данные одного пользователя
 
-     if (isset($_GET["project"]) &&  $base != 'project') {       // если есть гет параметр и таблица не равна  проджект
+     if (isset($_GET["project"]) &&  $base != 'project') {       // если в $_GET есть ключ project и таблица не равна project ---проджект
           $project_id = filter_input(INPUT_GET, 'project', FILTER_SANITIZE_NUMBER_INT);
-          $sample_query .= " AND project_id =  $project_id";  // добавляем фильтрацию по текущему проекту
+          $query .= " AND project_id =  $project_id";  // добавляем фильтрацию по текущему проекту
      };     
      
-     $sample_query_result = mysqli_query($mysql, $sample_query);
-     $sample_query_arr = mysqli_fetch_all($sample_query_result, MYSQLI_ASSOC);
-     return $sample_query_arr;
+     $result = mysqli_query($mysql, $query);
+     $arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
+     return $arr;
 };
 
 
@@ -83,8 +84,8 @@ function base_extr($mysql, $base,$user_id) {
 
 // функция для возврата заполненной формы
 /** 
-* Валидирует параметр массива $_POST
-* @param $name параметр массива $_POST
+* Валидация значения в массиве $_POST
+* @param string $name параметр массива $_POST
 * @return int значение в массиве
 */
 function get_post_val($name) {
@@ -92,7 +93,8 @@ function get_post_val($name) {
      //return $_POST[$name] ?? "";
      return $inp_post ?? "";
 };
-
+// эта функция фактически ничего не даёт. Обёртка. Одна строка замещается тоже одной строкой
+// и название get_post_val - очень неоднозначно - сочетание get и post ! Здесь get в другом контексте, но в это надо вдумываться ..
 
 
 
@@ -113,5 +115,12 @@ function merge_extr($user_id) {
      $some_query_arr = mysqli_fetch_all($some_query_result, MYSQLI_ASSOC);
 return $some_query_arr;
 };
+
+// почему просто не:
+//SELECT id,
+//        project_name
+//    FROM project
+//    WHERE user_id = ' . $user_id . '
+//    ORDER BY p_name
 
 ?>
