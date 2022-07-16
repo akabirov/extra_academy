@@ -7,7 +7,7 @@ require_once 'helpers.php';
 ?>
 
 <main class="content__main">
-    <h2 class="content__main-heading"><?php if($logic_for_h2 == 0 ) echo 'Ошибка 404, такая страница отсутствует'; 
+    <h2 class="content__main-heading"><?php if($logic_for_header == 0 ) echo 'Ошибка 404, такая страница отсутствует'; 
                                             else echo 'Список задач' ?></h2>
 
     <form class="search-form" action="index.php" method="post" autocomplete="off">
@@ -45,7 +45,7 @@ require_once 'helpers.php';
                 </td>
 
                 <td class="task__file">                     
-                    <a class="download-link" href="<?= $one_task['file_path'] ?>"></a> 
+                    <a class="download-link" href="<?php if ($one_task["file_path"]) echo 'uploads/'. $one_task['file_path']; ?>"> </a>
                 </td>
 
                 <td class="task__date"> <?= htmlspecialchars($one_task["dt_deadline"]); ?> </td> 

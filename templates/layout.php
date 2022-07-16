@@ -26,7 +26,7 @@
 
                     <div class="main-header__side-item user-menu">
                         <div class="user-menu__data">
-                            <p><?= htmlspecialchars($user); ?></p>
+                            <p><?= htmlspecialchars($user['name']); ?></p>
 
                             <a href="#">Выйти</a>
                         </div>
@@ -44,7 +44,7 @@
                             <?php foreach ($projects_arr_name_by_tasks as $one_project): ?>
                                 <li class="main-navigation__list-item<?php if ($project_id == $one_project['project_id']) echo ' main-navigation__list-item--active' ?>">
                                     <a class="main-navigation__list-item-link" href="?project=<?= $one_project['project_id'] ?>"><?= htmlspecialchars($one_project['project_name']); ?></a>
-                                    <span class="main-navigation__list-item-count"><?= count_tasks2($mysql, $one_project['project_id'], $user_id); ?></span> 
+                                    <span class="main-navigation__list-item-count"><?= count_tasks2($mysql, $one_project['project_id'], $user['id']); ?></span> 
                                 </li>
                             <?php endforeach; ?>
                         </ul>
