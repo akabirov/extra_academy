@@ -1,6 +1,6 @@
 <?php
-require_once 'my_functions.php';
 require_once 'helpers.php';
+require_once 'my_functions.php';
 
 // показывать или нет выполненные задачи
 $show_complete_tasks = rand(0, 1);
@@ -10,17 +10,16 @@ $user = [
     'user_name' => 'Вася',
 ];
 
-//$user_id = $user['id'];
 
 
 // подключение
-$mysql = mysqli_connect("localhost", "root", "mysql", "doinngsdone")
+$mysqli = mysqli_connect("localhost", "root", "mysql", "doinngsdone")
     or exit("Ошибка подключения: " . mysqli_connect_error());
-mysqli_set_charset($mysql, 'utf8');
+mysqli_set_charset($mysqli, 'utf8');
 
 
 // массивы проектов
-$projects_arr = base_extr($mysql, 'project', $user['id']);
+$projects_arr = base_extr($mysqli, 'project', $user['id']);
 
 
 // изввлекаем get-параметр номера проекта

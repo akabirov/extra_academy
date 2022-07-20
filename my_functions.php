@@ -26,9 +26,9 @@ function count_tasks($tasks, $one_project)
  * @param int $user_id идетификатор пользователя
  * @return integer 
  */
-function count_tasks2($mysql, $project_id, $user_id){    
+function count_tasks2($mysqli, $project_id, $user_id){    
      $query_count = "SELECT COUNT(id) FROM task WHERE project_id = $project_id and user_id = $user_id";
-     $result = mysqli_query($mysql,  $query_count)
+     $result = mysqli_query($mysqli,  $query_count)
           or exit('Ошибка подключения к бд в функции');
      $row = mysqli_fetch_row($result);
 
@@ -64,7 +64,7 @@ function count_hours($sample_date) {
 * @param int $user_id id пользователя
 * @return array 2-мерный массив
 */
-function base_extr($mysql, $base,$user_id) {
+function base_extr($mysqli, $base,$user_id) {
 
      $query = "SELECT * FROM $base WHERE user_id = $user_id"; // получаем все из таблицы
 
@@ -73,7 +73,7 @@ function base_extr($mysql, $base,$user_id) {
           $query .= " AND project_id =  $project_id";  // добавляем фильтрацию по текущему проекту
      };     
      
-     $result = mysqli_query($mysql, $query);
+     $result = mysqli_query($mysqli, $query);
      $arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
      return $arr;
 };
@@ -86,10 +86,7 @@ function base_extr($mysql, $base,$user_id) {
 * @param int user_id идентификатор пользователя
 * @return array 2-мерный массив
 */
-function join_tasks_and_projects($user_id) {
-     $mysql = mysqli_connect("localhost", "root", "mysql", "doinngsdone")
-     or exit("Ошибка подключения: " . mysqli_connect_error());
-     mysqli_set_charset($mysql, 'utf8');   
+function join_tasks_and_projects($user_id, $mysqli) {
 
      $some_query = "SELECT DISTINCT project_name, project_id FROM (
           SELECT project_name, project_id FROM project RIGHT JOIN task ON task.project_id = project.id WHERE task.user_id = $user_id
@@ -97,7 +94,7 @@ function join_tasks_and_projects($user_id) {
 
      //$some_query = "SELECT DISTINCT project_name, id FROM project where user_id = $user_id"; Можно было бы здесь упростить и тогда так же добавлять записи в project, тогда бы раздули таблицу
 
-     $some_query_result = mysqli_query($mysql, $some_query);
+     $some_query_result = mysqli_query($mysqli, $some_query);
      $some_query_arr = mysqli_fetch_all($some_query_result, MYSQLI_ASSOC);
 return $some_query_arr;
 };
