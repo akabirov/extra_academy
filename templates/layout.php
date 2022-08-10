@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 
+
 <html lang="ru">
 
 <head>
@@ -28,7 +29,7 @@
                         <div class="user-menu__data">
                             <p><?= htmlspecialchars($user['name']); ?></p>
 
-                            <a href="#">Выйти</a>
+                            <a href="pages/guest.html">Выйти</a>
                         </div>
                     </div>
                 </div>
@@ -41,10 +42,12 @@
 
                     <nav class="main-navigation">
                         <ul class="main-navigation__list">
+
                             <?php foreach ($projects_arr_name_by_tasks as $one_project): ?>
                                 <li class="main-navigation__list-item<?php if ($project_id == $one_project['project_id']) echo ' main-navigation__list-item--active' ?>">
                                     <a class="main-navigation__list-item-link" href="?project=<?= $one_project['project_id'] ?>"><?= htmlspecialchars($one_project['project_name']); ?></a>
                                     <span class="main-navigation__list-item-count"><?= count_tasks2($mysqli, $one_project['project_id'], $user['id']); ?></span> 
+
                                 </li>
                             <?php endforeach; ?>
                         </ul>

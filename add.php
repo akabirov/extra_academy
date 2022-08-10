@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
        // исполняем подготовленное выражение
        mysqli_stmt_execute($stmt);
 
-       header("Location: /extra_academy/");    
+       header("Location: /508085-doingsdone-12/");    
     } 
 
     
