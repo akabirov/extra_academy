@@ -1,7 +1,7 @@
 
 <main class="content__main">
         <h2 class="content__main-heading">Добавление задачи</h2>
-
+        
         <form class="form" action="add.php" method="post" autocomplete="off" enctype="multipart/form-data"> 
           <div class="form__row">
             <label class="form__label" for="name">Название <sup>*</sup></label>
@@ -43,9 +43,12 @@
               </label>
             </div>
           </div>
-
+          <?php if($_SESSION['is_register'] == true):?>
           <div class="form__row form__row--controls">
             <input class="button" type="submit" name="" value="Добавить">
           </div>
+          <?php elseif($_SESSION['is_register'] == false): ?>
+          <a class="welcome__button button" href="./register.php">Зарегистрироваться</a> 
         </form>
+        <?php endif?>
       </main>

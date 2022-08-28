@@ -3,8 +3,8 @@ CREATE DATABASE doinngsdone DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_gene
 USE doinngsdone;
 
 CREATE TABLE user (
+    dt_registered TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Идентификатор пользователя',
-    dt_registered TIMESTAMP NOT NULL COMMENT 'Таймстэмп регистрации',
     password_hash VARCHAR(128) NOT NULL COMMENT 'Хэш пароля',
     avatar_path VARCHAR(128) COMMENT 'Путь аватарки',
     name VARCHAR(128) COMMENT 'Имя пользователя',

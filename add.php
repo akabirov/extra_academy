@@ -2,6 +2,7 @@
 
 require_once 'variables.php';
 
+session_start();
 
 // проверка на количество ошибок при переходе с метода post
 // и переадресация на главную
@@ -52,13 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($errors == false && $date) {
         $user_id = $user['id'];
-        $insert_in_task = 'INSERT INTO task (task_name, dt_deadline, status_ready, user_id, project_id, file_path) VALUES (?, ?, ?, ?, ?, ?)';
+        $insert_in_task = 'INSERT INTO task (task_name, dt_deadline, user_id, project_id, file_path) VALUES (?, ?, ?, ?, ?)';
         
         // делаем подготовленное выражение
         $stmt = db_get_prepare_stmt($mysqli, $insert_in_task, [
             $tname, 
             $date,
-             false, 
             $user_id,
             $project, 
             $original_name
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
        // исполняем подготовленное выражение
        mysqli_stmt_execute($stmt);
 
-       header("Location: /508085-doingsdone-12/");    
+       header("Location: /extra_academy/");    
     } 
 
     
@@ -84,7 +84,8 @@ $add_temp = include_template(
         'all_projects_arr' => $all_projects_arr,
         'tname' => $tname,
         'date' => $date,
-        'errors' => $errors
+        'errors' => $errors,
+        'mode_view' => $mode_view['is_register']
     ]
 );
 

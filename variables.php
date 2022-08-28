@@ -14,7 +14,7 @@ $user = [
 
 
 // подключение
-$mysqli = mysqli_connect("localhost", "root", "mysql", "doinngsdone")
+$mysqli = mysqli_connect("localhost", "root", "mysql", "doinngsdone") 
     or exit("Ошибка подключения: " . mysqli_connect_error());
 mysqli_set_charset($mysqli, 'utf8');
 

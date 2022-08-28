@@ -18,7 +18,7 @@
     <div class="page-wrapper">
         <div class="container container--with-sidebar">
             <header class="main-header">
-                <a href="/508085-doingsdone-12/">
+                <a href="/extra_academy/">
                     <img src="img/logo.png" width="153" height="42" alt="Логотип Дела в порядке">
                 </a>
 
@@ -29,7 +29,8 @@
                         <div class="user-menu__data">
                             <p><?= htmlspecialchars($user['name']); ?></p>
 
-                            <a href="pages/guest.html">Выйти</a>
+                            <a href="templates/guest.php"><?php if($_SESSION['is_register'] == true): echo 'Выйти'; else: echo 'Войти или Пройти регистрацию'; endif ?> </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -42,7 +43,7 @@
 
                     <nav class="main-navigation">
                         <ul class="main-navigation__list">
-
+                            <?php if($_SESSION['is_register'] == true):?>
                             <?php foreach ($projects_arr_name_by_tasks as $one_project): ?>
                                 <li class="main-navigation__list-item<?php if ($project_id == $one_project['project_id']) echo ' main-navigation__list-item--active' ?>">
                                     <a class="main-navigation__list-item-link" href="?project=<?= $one_project['project_id'] ?>"><?= htmlspecialchars($one_project['project_name']); ?></a>
@@ -50,6 +51,7 @@
 
                                 </li>
                             <?php endforeach; ?>
+                            <?php endif ?>
                         </ul>
                     </nav>
 

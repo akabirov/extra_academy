@@ -3,6 +3,7 @@ INSERT INTO user (dt_registered, password_hash, avatar_path, name, email) VALUES
 INSERT INTO user (dt_registered, password_hash, avatar_path, name, email) VALUES ('01.03.2005', 'a3a3a3', 'avt_3.jpeg', 'Олег', 'user_3@email.ru'); -- 3
 
 
+
 INSERT INTO project (project_name, user_id) VALUES ('Входящие', 1);
 INSERT INTO project (project_name, user_id) VALUES ('Учеба', 2);
 INSERT INTO project (project_name, user_id) VALUES ('Работа', 3);
