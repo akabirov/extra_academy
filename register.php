@@ -1,28 +1,41 @@
 <?php
 require_once 'variables.php';
 
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $errors = [];
 
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
-    if (!$email) {
-        $errors['email'] = 'Нет email';
-    };
 
+
+
+
+   // ступенчатая проверка емаила
+    if (!$email) { // есть ли емаил
+        $errors['email'] = 'Нет email';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)){ // валиден ли емаил
+         $errors['email'] = 'Email не валиден';
+
+        } elseif (check_email($mysqli, $email) == true){
+            $errors['email'] = 'Такой email уже есть'; // есть ли такой емаил в базе
+    };
+    
+
+
+    
     $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
     if (!$password) {
         $errors['password'] = 'Нет password';
     };
 
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
-    if (!$name) {
+    $tname = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
+    if (!$tname) {
         $errors['name'] = 'Нет name';
     };
 
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-    $today = date('d.m.Y');
+    
 
 
     if (is_uploaded_file($_FILES['file']['tmp_name'])) { // была загрузка файла
@@ -41,22 +54,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     };
 
     if ($errors == false) {
+
+        $today = date('d.m.Y');
+
         // SQL
         $insert_in_task = 'INSERT INTO user (dt_registered, password_hash, avatar_path, name, email) VALUES (?, ?, ?, ?, ?)';
 
         // делаем подготовленное выражение
         $stmt = db_get_prepare_stmt($mysqli, $insert_in_task, [
             $today,
-            $passwordHash,
+            password_hash($password, PASSWORD_DEFAULT),
             $avatar_path, 
-            $name,
+            $tname,
             $email
         ]);
 
             // исполняем подготовленное выражение
         mysqli_stmt_execute($stmt);
+        
+        session_start();
+        $_SESSION['is_register'] = true;
 
-        header("Location: /extra_academy/");
+        header("Location: /extra_academy/"); // /extra_academy/
+        exit();
     } 
  
 };
@@ -65,9 +85,27 @@ $registr = include_template(
     'reg.php',
     [
         'all_projects_arr' => $all_projects_arr,
-        'tname' => $tname,
         'date' => $date,
-        'errors' => $errors
+        'errors' => $errors,
+        'email' => $email,
+        'password' => $password,
+        'tname' => $tname
     ]
 );
-print($registr);
+
+
+$layout = include_template(
+    'layout.php', [
+        'title' => 'Регистрация',
+        'user' => $user['user_name'],
+        'main' => $registr,
+        'mysql' => $mysqli,
+        'projects_arr' => $projects_arr,
+        'project_id' => $project_id,
+        'mode_view' => $mode_view['is_register']
+
+
+
+    ]);
+
+print($layout);

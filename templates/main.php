@@ -7,7 +7,8 @@ require_once 'variables.php';
 <main class="content__main">
 
     <h2 class="content__main-heading">
-    <?php echo ($logic_for_header == 0) ? 'Ошибка 404, такая страница отсутствует' : 'Список задач' ?>
+    <!--<php echo ($logic_for_header == 0) ? 'Ошибка 404, такая страница отсутствует' : 'Список задач' ?> -->
+    <?php echo ($logic_for_header == 0) ? 'Ошибка 404, такая страница отсутствует' : ($_SESSION['is_register']  == true) ? 'Список задач' : 'Пожалуйста пройдите авторизацию' ?>
     </h2>
 
     <form class="search-form" action="index.php" method="post" autocomplete="off">
@@ -33,7 +34,7 @@ require_once 'variables.php';
     </div>
 
     <table class="tasks">
-
+        <?php if($_SESSION['is_register']  == true):?>
         <?php foreach ($tasks_arr as $one_task) :
             if ($show_complete_tasks == 0 and $one_task["status_ready"] == 1) continue; ?>
             <tr class="tasks__item task<?php if ($one_task["status_ready"]) echo ' task--completed'; elseif (count_hours($one_task["dt_deadline"]) < 24) echo ' task--important'; ?>">
@@ -53,6 +54,8 @@ require_once 'variables.php';
                 </td>
             </tr>
         <?php endforeach; ?>
+        <?php endif ?>
+
         <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
     </table>
 </main>
