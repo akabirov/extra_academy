@@ -1,6 +1,7 @@
 <?php
 require_once 'variables.php';
 
+
 session_start();
 
 // массив задач
