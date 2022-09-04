@@ -29,7 +29,7 @@
                         <div class="user-menu__data">
                             <p><?= htmlspecialchars($user['name']); ?></p>
 
-                            <a href="templates/guest.php"><?php if($_SESSION['is_register'] == true): echo 'Выйти'; else: echo 'Войти или Пройти регистрацию'; endif ?> </a>
+                            <a href="templates/guest.php"><?php if($_SESSION['user']['id'] != false): echo 'Выйти'; else: echo 'Войти или Пройти регистрацию'; endif ?> </a>
                             
                         </div>
                     </div>
@@ -43,11 +43,11 @@
 
                     <nav class="main-navigation">
                         <ul class="main-navigation__list">
-                            <?php if($_SESSION['is_register'] == true):?>
+                            <?php if($_SESSION['user']['id'] != false):?>
                             <?php foreach ($projects_arr_name_by_tasks as $one_project): ?>
                                 <li class="main-navigation__list-item<?php if ($project_id == $one_project['project_id']) echo ' main-navigation__list-item--active' ?>">
                                     <a class="main-navigation__list-item-link" href="?project=<?= $one_project['project_id'] ?>"><?= htmlspecialchars($one_project['project_name']); ?></a>
-                                    <span class="main-navigation__list-item-count"><?= count_tasks2($mysqli, $one_project['project_id'], $user['id']); ?></span> 
+                                    <span class="main-navigation__list-item-count"><?= count_tasks2($mysqli, $one_project['project_id'], $_SESSION['user']['id']); ?></span> 
 
                                 </li>
                             <?php endforeach; ?>

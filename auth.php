@@ -3,14 +3,23 @@
 require_once 'variables.php';
 
 
+// проверка на наличие сессии 
+
+if (isset($_SESSION['is_register'])) {
+    header('Location: /extra_academy/');
+    exit;
+};
+
+
 // проверка на количество ошибок при переходе с метода post
 // и переадресация на главную
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
-    $errors = [];
-
+    
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
+    print(strtolower($email));
 
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){ // валиден ли емаил
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // валиден ли емаил
         $errors['email'] = 'Email не валиден';
     };
 
@@ -20,34 +29,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     } elseif ($password && $errors == false) {
 
-        $query = "SELECT password_hash FROM user WHERE email = '$email'"; // достаем слепок там где он равен введенному емаилу
+        $hash = get_param_from_user($mysql, 'password_hash', $email);
+        $user_id = get_param_from_user($mysql, 'id', $email);
+        $name = get_param_from_user($mysql, 'name', $email);
+    
+    } else {
+        print('false, неверный логин или пароль' . '<br>'); 
+    }; // фиаско
 
-        $result = mysqli_query($mysqli, $query);
-    
-        $old_hash = mysqli_fetch_all($result, MYSQLI_ASSOC)[0]['password_hash']; // слепок
-    
-        //print($result_fetch);
-    
-    
-        if (password_verify($password, $old_hash)) { // если пароль совпадает с хешем из базы, то
-            
-            session_start();
-            $_SESSION['is_register'] = true;
+
+    if (password_verify($password, $hash)) { // если пароль совпадает с хешем из базы, то
             
 
-            header("Location: /508085-doingsdone-12/"); // успех auth.php
-        } else {
-            print('false, пароль не подходит к этому емаилу' . '<br>'); // фиаско
-        };
+        session_start();
+         $_SESSION['is_register'] = $user_id; //true;
+
+         $_SESSION['user']['name'] = $name;
+         $_SESSION['user']['id'] = $user_id;
  
+
+        header("Location: /extra_academy/"); // успех /508085-doingsdone-12/
+        exit; 
    
     };
 };
 
 
-//////////////////////////////////
+// массив проектов
+$projects_arr = base_extr($mysql, 'project', $_SESSION['user']['id']);
+
+
 $add_temp = include_template(
-    'auth.php',
+    'auth_temp.php',
     [
         'mode_view' => $mode_view['is_register']
     ]
@@ -57,12 +70,10 @@ $layout = include_template(
     'layout.php',
     [
         'title' => 'Авторизация',
-        'user' => $user['user_name'],
         'main' => $add_temp,
-        'mysql' => $mysqli,
+        'mysql' => $mysql,
         'projects_arr' => $projects_arr,
         'project_id' => $project_id,
-        'user_id' => $user['id'],
     ]
 );
 

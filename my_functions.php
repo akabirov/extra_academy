@@ -22,14 +22,14 @@ function count_tasks($tasks, $one_project)
  * Возвращает количество задач относящихся к проекту
  * через sql запрос
  * @param string $project_id идентификатор проекта
- * @param $mysql подключкние к бд
+ * @param $mysql подключкние к БД
  * @param int $user_id идетификатор пользователя
  * @return integer 
  */
-function count_tasks2($mysqli, $project_id, $user_id)
+function count_tasks2($mysql, $project_id, $user_id)
 {
      $query_count = "SELECT COUNT(id) FROM task WHERE project_id = $project_id and user_id = $user_id";
-     $result = mysqli_query($mysqli,  $query_count)
+     $result = mysqli_query($mysql,  $query_count)
           or exit('Ошибка подключения к бд в функции');
      $row = mysqli_fetch_row($result);
 
@@ -65,7 +65,7 @@ function count_hours($sample_date)
  * @param int $user_id id пользователя
  * @return array 2-мерный массив
  */
-function base_extr($mysqli, $base, $user_id)
+function base_extr($mysql, $base, $user_id)
 {
 
      $query = "SELECT * FROM $base WHERE user_id = $user_id"; // получаем все из таблицы
@@ -75,7 +75,7 @@ function base_extr($mysqli, $base, $user_id)
           $query .= " AND project_id =  $project_id";  // добавляем фильтрацию по текущему проекту
      };
 
-     $result = mysqli_query($mysqli, $query);
+     $result = mysqli_query($mysql, $query);
      $arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
      return $arr;
 };
@@ -83,17 +83,17 @@ function base_extr($mysqli, $base, $user_id)
 /**
  * Извлекает значение емаил из таблицы пользователей 
  * если заданный емаил уже есть в базе
- * @param $mysqli подключение к БД
+ * @param $mysql подключение к БД
  * @param string $email емаил
  * @return string или null
  */
-function check_email($mysqli, $email)
+function is_email_exist($mysql, $email)
 {
      $query = "SELECT 
-     case when email != 'null' then true end as 'founding_email_in_func'
+     case when email != 'null' then true else false end as 'founding_email_in_func'
      FROM user WHERE email = '$email'";
 
-     $result = mysqli_query($mysqli,  $query)
+     $result = mysqli_query($mysql,  $query)
           or exit('Ошибка подключения к бд в функции check_email');
      $row = mysqli_fetch_row($result);
      return $row[0];
@@ -101,13 +101,14 @@ function check_email($mysqli, $email)
 
 
 
-
-/** связывает таблицы проектов и задач,
+/**
+ * связывает таблицы проектов и задач,
  * достает список проектов с их идентификаторами и названиями по текущему user_id
+ * @param $mysql подключение к БД
  * @param int user_id идентификатор пользователя
  * @return array 2-мерный массив
  */
-function join_tasks_and_projects($user_id, $mysqli)
+function join_tasks_and_projects($mysql, $user_id)
 {
 
      $some_query = "SELECT DISTINCT project_name, project_id FROM (
@@ -116,7 +117,26 @@ function join_tasks_and_projects($user_id, $mysqli)
 
      //$some_query = "SELECT DISTINCT project_name, id FROM project where user_id = $user_id"; Можно было бы здесь упростить и тогда так же добавлять записи в project, тогда бы раздули таблицу
 
-     $some_query_result = mysqli_query($mysqli, $some_query);
+     $some_query_result = mysqli_query($mysql, $some_query);
      $some_query_arr = mysqli_fetch_all($some_query_result, MYSQLI_ASSOC);
      return $some_query_arr;
+};
+
+
+
+
+/** 
+ * извлекает из таблицы user необходимый параметр с фильтрацией по email,
+ * @param $mysql подключение к БД
+ * @param $param параметр, который нужно получить из таблицы 
+ * @param $email email по которому фильтруем таблицу
+ * @return array 2-мерный массив
+ */
+function get_param_from_user($mysql, $param, $email) 
+{
+     $query = "SELECT $param FROM user WHERE email = '$email'";
+     $result = mysqli_query($mysql, $query);
+     $need_param = mysqli_fetch_all($result, MYSQLI_ASSOC)[0][$param];
+
+     return $need_param;
 };

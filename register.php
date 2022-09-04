@@ -2,14 +2,13 @@
 require_once 'variables.php';
 
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $errors = [];
+   // $errors = [];
 
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
 
-
+    $email = strtolower($email);
 
 
    // ступенчатая проверка емаила
@@ -18,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)){ // валиден ли емаил
          $errors['email'] = 'Email не валиден';
 
-        } elseif (check_email($mysqli, $email) == true){
+        } elseif (is_email_exist($mysql, $email) == true){
             $errors['email'] = 'Такой email уже есть'; // есть ли такой емаил в базе
     };
     
@@ -60,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // SQL
         $insert_in_task = 'INSERT INTO user (dt_registered, password_hash, avatar_path, name, email) VALUES (?, ?, ?, ?, ?)';
 
-        // делаем подготовленное выражение
-        $stmt = db_get_prepare_stmt($mysqli, $insert_in_task, [
+        // создаем подготовленное выражение
+        $stmt = db_get_prepare_stmt($mysql, $insert_in_task, [
             $today,
             password_hash($password, PASSWORD_DEFAULT),
             $avatar_path, 
@@ -69,14 +68,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $email
         ]);
 
-            // исполняем подготовленное выражение
+        // исполняем подготовленное выражение
         mysqli_stmt_execute($stmt);
+
+        // получаем id из таблицы
+        $user_id = get_param_from_user($mysql, 'id', $email);
         
         session_start();
-        $_SESSION['is_register'] = true;
+        $_SESSION['user']['name'] = $tname;
+        $_SESSION['user']['id'] = $user_id;
 
         header("Location: /extra_academy/"); // /extra_academy/
-        exit();
+        exit;
     } 
  
 };
@@ -99,7 +102,7 @@ $layout = include_template(
         'title' => 'Регистрация',
         'user' => $user['user_name'],
         'main' => $registr,
-        'mysql' => $mysqli,
+        'mysql' => $mysql,
         'projects_arr' => $projects_arr,
         'project_id' => $project_id,
         'mode_view' => $mode_view['is_register']

@@ -1,5 +1,7 @@
 <?php session_start(); 
-$_SESSION['is_register'] = false; ?>
+
+session_unset();
+//$_SESSION['is_register'] = false; ?>
 
 
 <!DOCTYPE html>

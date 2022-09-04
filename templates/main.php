@@ -8,9 +8,15 @@ require_once 'variables.php';
 
     <h2 class="content__main-heading">
     <!--<php echo ($logic_for_header == 0) ? 'Ошибка 404, такая страница отсутствует' : 'Список задач' ?> -->
-    <?php echo ($logic_for_header == 0) ? 'Ошибка 404, такая страница отсутствует' : ($_SESSION['is_register']  == true) ? 'Список задач' : 'Пожалуйста пройдите авторизацию' ?>
-    </h2>
-
+    <!-- <php ($logic_for_header == 0 ? 'Ошибка 404, такая страница отсутствует' : (_SESSION['user']['id']  != null) ? 'Список задач' : 'Пожалуйста пройдите авторизацию' ?> -->
+    
+    <?php if($logic_for_header == 0): 
+      echo 'Ошибка 404, такая страница отсутствует'; 
+     elseif($_SESSION['user']['id']  != null): 
+     echo 'Список задач'; 
+     elseif($_SESSION['user']['id'] == null): echo 'Пожалуйста пройдите авторизацию'; 
+     endif ?>
+    </h2> 
     <form class="search-form" action="index.php" method="post" autocomplete="off">
         <input class="search-form__input" type="text" name="" value="" placeholder="Поиск по задачам">
 
@@ -34,7 +40,7 @@ require_once 'variables.php';
     </div>
 
     <table class="tasks">
-        <?php if($_SESSION['is_register']  == true):?>
+        <?php if($_SESSION['user']['id']  != null):?>
         <?php foreach ($tasks_arr as $one_task) :
             if ($show_complete_tasks == 0 and $one_task["status_ready"] == 1) continue; ?>
             <tr class="tasks__item task<?php if ($one_task["status_ready"]) echo ' task--completed'; elseif (count_hours($one_task["dt_deadline"]) < 24) echo ' task--important'; ?>">

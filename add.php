@@ -1,19 +1,19 @@
 <?php
 
-require_once 'variables.php';
-
 session_start();
+
+require_once 'variables.php';
 
 // проверка на количество ошибок при переходе с метода post
 // и переадресация на главную
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
 
-    $errors = [];
+   //$errors = [];
 
     // проверка имени задачи
-    $tname = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
-    if (!$tname) {
-        $errors['tname'] = 'Название не введено';
+    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
+    if (!$name) {
+        $errors['name'] = 'Название не введено';
     };
 
     // проверка выбранного проекта
@@ -52,12 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     };
 
     if ($errors == false && $date) {
-        $user_id = $user['id'];
+        $user_id = $_SESSION['user']['id'];
         $insert_in_task = 'INSERT INTO task (task_name, dt_deadline, user_id, project_id, file_path) VALUES (?, ?, ?, ?, ?)';
         
         // делаем подготовленное выражение
-        $stmt = db_get_prepare_stmt($mysqli, $insert_in_task, [
-            $tname, 
+        $stmt = db_get_prepare_stmt($mysql, $insert_in_task, [
+            $name, 
             $date,
             $user_id,
             $project, 
@@ -73,16 +73,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
 }; 
  // все варианты проектов
+ 
 $query = "SELECT id, project_name FROM project";
-$result = mysqli_query($mysqli, $query);
+$result = mysqli_query($mysql, $query);
 $all_projects_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
+
+// массив проектов
+$projects_arr = base_extr($mysql, 'project', $_SESSION['user']['id']);
+
+print($name);
 
 $add_temp = include_template(
     'add_temp.php',
     [
         'all_projects_arr' => $all_projects_arr,
-        'tname' => $tname,
+        'user_name' => $name,
         'date' => $date,
         'errors' => $errors,
         'mode_view' => $mode_view['is_register']
@@ -96,7 +102,7 @@ $layout = include_template(
         'title' => 'Дела в порядке',
         'user' => $user['user_name'],
         'main' => $add_temp,
-        'mysql' => $mysqli,
+        'mysql' => $mysql,
         'projects_arr' => $projects_arr,
         'project_id' => $project_id,
         'user_id' => $user['id'],

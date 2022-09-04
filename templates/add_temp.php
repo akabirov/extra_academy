@@ -6,9 +6,9 @@
           <div class="form__row">
             <label class="form__label" for="name">Название <sup>*</sup></label>
 
-            <input type="text" name='name' id='name' value='<?= $tname ?>' placeholder='Введите название' class='form__input<?php if($_SERVER['REQUEST_METHOD'] == 'POST' && $errors['tname']) echo ' form__input--error' ?> '>
+            <input type="text" name='name' id='name' value='<?php $user_name ?>' placeholder='Введите название' class='form__input<?php if($_SERVER['REQUEST_METHOD'] == 'POST' && $errors['name']) echo ' form__input--error' ?> '>
                <?php if($_SERVER['REQUEST_METHOD'] == 'POST'): ?>
-               <p class='form__message'><?= $errors['tname'] ?></p> 
+               <p class='form__message'><?= $errors['name'] ?></p> 
                <?php endif; ?>
           </div>
 
@@ -43,11 +43,11 @@
               </label>
             </div>
           </div>
-          <?php if($_SESSION['is_register'] == true):?>
+          <?php if($_SESSION['user']['id'] != false):?>
           <div class="form__row form__row--controls">
             <input class="button" type="submit" name="" value="Добавить">
           </div>
-          <?php elseif($_SESSION['is_register'] == false): ?>
+          <?php elseif($_SESSION['user']['id'] == false): ?>
           <a class="welcome__button button" href="./register.php">Зарегистрироваться</a> 
         </form>
         <?php endif?>
