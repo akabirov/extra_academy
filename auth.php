@@ -29,10 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     } elseif ($password && $errors == false) {
 
-        $hash = get_param_from_user($mysql, 'password_hash', $email);
-        $user_id = get_param_from_user($mysql, 'id', $email);
-        $name = get_param_from_user($mysql, 'name', $email);
-    
+        $all_params = get_param_from_user($mysqli, 'password_hash', 'id', 'name', $email);
+
+        $hash = $all_params['password_hash'];
+        $user_id = $all_params['id'];
+        $name = $all_params['name'];
+
     } else {
         print('false, неверный логин или пароль' . '<br>'); 
     }; // фиаско
@@ -42,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
 
         session_start();
-         $_SESSION['is_register'] = $user_id; //true;
 
          $_SESSION['user']['name'] = $name;
          $_SESSION['user']['id'] = $user_id;
@@ -56,13 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 // массив проектов
-$projects_arr = base_extr($mysql, 'project', $_SESSION['user']['id']);
+$projects_arr = base_extr($mysqli, 'project', $_SESSION['user']['id']);
 
 
 $add_temp = include_template(
     'auth_temp.php',
     [
-        'mode_view' => $mode_view['is_register']
+       // 'mode_view' => $mode_view['is_register']
     ]
 );
 
@@ -71,7 +72,7 @@ $layout = include_template(
     [
         'title' => 'Авторизация',
         'main' => $add_temp,
-        'mysql' => $mysql,
+        'mysql' => $mysqli,
         'projects_arr' => $projects_arr,
         'project_id' => $project_id,
     ]

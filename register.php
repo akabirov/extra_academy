@@ -4,7 +4,7 @@ require_once 'variables.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-   // $errors = [];
+    $errors = [];
 
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
 
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)){ // валиден ли емаил
          $errors['email'] = 'Email не валиден';
 
-        } elseif (is_email_exist($mysql, $email) == true){
+        } elseif (is_email_exist($mysqli, $email)){
             $errors['email'] = 'Такой email уже есть'; // есть ли такой емаил в базе
     };
     
@@ -57,10 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $today = date('d.m.Y');
 
         // SQL
-        $insert_in_task = 'INSERT INTO user (dt_registered, password_hash, avatar_path, name, email) VALUES (?, ?, ?, ?, ?)';
+        $insert_in_task = 'INSERT INTO user (dt_registered, password_hash, avatar_path, name, email) VALUES (?, ?, ?, ?, ?)'; //dt_registered,
 
         // создаем подготовленное выражение
-        $stmt = db_get_prepare_stmt($mysql, $insert_in_task, [
+        $stmt = db_get_prepare_stmt($mysqli, $insert_in_task, [
             $today,
             password_hash($password, PASSWORD_DEFAULT),
             $avatar_path, 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mysqli_stmt_execute($stmt);
 
         // получаем id из таблицы
-        $user_id = get_param_from_user($mysql, 'id', $email);
+        $user_id = get_param_from_user($mysqli, 'id', 'id', 'id', $email)['id'];
         
         session_start();
         $_SESSION['user']['name'] = $tname;
@@ -102,13 +102,10 @@ $layout = include_template(
         'title' => 'Регистрация',
         'user' => $user['user_name'],
         'main' => $registr,
-        'mysql' => $mysql,
+        'mysql' => $mysqli,
         'projects_arr' => $projects_arr,
         'project_id' => $project_id,
         'mode_view' => $mode_view['is_register']
-
-
-
     ]);
 
 print($layout);

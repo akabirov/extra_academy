@@ -27,7 +27,7 @@
 
                     <div class="main-header__side-item user-menu">
                         <div class="user-menu__data">
-                            <p><?= htmlspecialchars($user['name']); ?></p>
+                            <p><?= htmlspecialchars($_SESSION['user']['name']); ?></p>
 
                             <a href="templates/guest.php"><?php if($_SESSION['user']['id'] != false): echo 'Выйти'; else: echo 'Войти или Пройти регистрацию'; endif ?> </a>
                             

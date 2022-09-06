@@ -2,13 +2,21 @@
 
 session_start();
 
+if (!isset($_SESSION['user']['id'])) {
+    header('Location: /extra_academy/');
+    exit;
+};
+
 require_once 'variables.php';
+
+$user_id = $_SESSION['user']['id'];
+
 
 // проверка на количество ошибок при переходе с метода post
 // и переадресация на главную
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
 
-   //$errors = [];
+   $errors = [];
 
     // проверка имени задачи
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, ['options' => ['default' => '']]);
@@ -51,12 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     };
 
+
+    
+    
+
+
     if ($errors == false && $date) {
-        $user_id = $_SESSION['user']['id'];
+        
         $insert_in_task = 'INSERT INTO task (task_name, dt_deadline, user_id, project_id, file_path) VALUES (?, ?, ?, ?, ?)';
         
         // делаем подготовленное выражение
-        $stmt = db_get_prepare_stmt($mysql, $insert_in_task, [
+        $stmt = db_get_prepare_stmt($mysqli, $insert_in_task, [
             $name, 
             $date,
             $user_id,
@@ -72,15 +85,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     
 }; 
- // все варианты проектов
+
+
+ // варианты проектов по текущему юзеру
  
-$query = "SELECT id, project_name FROM project";
-$result = mysqli_query($mysql, $query);
+$query = "SELECT id, project_name FROM project WHERE id IN (SELECT project_id from task WHERE user_id = '$user_id')";
+$result = mysqli_query($mysqli, $query);
 $all_projects_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
 // массив проектов
-$projects_arr = base_extr($mysql, 'project', $_SESSION['user']['id']);
+$projects_arr = base_extr($mysqli, 'project', $_SESSION['user']['id']);
 
 print($name);
 
@@ -88,10 +103,9 @@ $add_temp = include_template(
     'add_temp.php',
     [
         'all_projects_arr' => $all_projects_arr,
-        'user_name' => $name,
+        //'user_name' => $name,
         'date' => $date,
         'errors' => $errors,
-        'mode_view' => $mode_view['is_register']
     ]
 );
 
@@ -100,12 +114,12 @@ $layout = include_template(
     'layout.php',
     [
         'title' => 'Дела в порядке',
-        'user' => $user['user_name'],
+        //'user' => $user['user_name'],
         'main' => $add_temp,
-        'mysql' => $mysql,
+        'mysql' => $mysqli,
         'projects_arr' => $projects_arr,
         'project_id' => $project_id,
-        'user_id' => $user['id'],
+       //'user_id' => $user['id'],
     ]
 );
 

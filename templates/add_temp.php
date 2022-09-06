@@ -6,7 +6,7 @@
           <div class="form__row">
             <label class="form__label" for="name">Название <sup>*</sup></label>
 
-            <input type="text" name='name' id='name' value='<?php $user_name ?>' placeholder='Введите название' class='form__input<?php if($_SERVER['REQUEST_METHOD'] == 'POST' && $errors['name']) echo ' form__input--error' ?> '>
+            <input type="text" name='name' id='name' value='<?php $_SESSION['user']['name'] ?>' placeholder='Введите название' class='form__input<?php if($_SERVER['REQUEST_METHOD'] == 'POST' && $errors['name']) echo ' form__input--error' ?> '>
                <?php if($_SERVER['REQUEST_METHOD'] == 'POST'): ?>
                <p class='form__message'><?= $errors['name'] ?></p> 
                <?php endif; ?>

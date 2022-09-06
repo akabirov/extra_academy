@@ -4,17 +4,16 @@ session_start();
 
 require_once 'variables.php';
 
-$project_id = $_GET['project'];
-
+$project_id = filter_input(INPUT_GET, 'project', FILTER_SANITIZE_SPECIAL_CHARS);
 
 // массив задач
-$tasks_arr = base_extr($mysql, 'task', $_SESSION['user']['id']); 
+$tasks_arr = base_extr($mysqli, 'task', $_SESSION['user']['id']); 
 
 // массив проектов
-$projects_arr = base_extr($mysql, 'project', $_SESSION['user']['id']); 
+$projects_arr = base_extr($mysqli, 'project', $_SESSION['user']['id']); 
 
 // массив проектов с названиями задач
-$projects_arr_name_by_tasks = join_tasks_and_projects($mysql, $_SESSION['user']['id']);  
+$projects_arr_name_by_tasks = join_tasks_and_projects($mysqli, $_SESSION['user']['id']);  
 
 
 // посчитали количество задач по проектам
@@ -47,8 +46,8 @@ $layout = include_template(
     [
         'title' => 'Дела в порядке',
         'main' => $main,
-        'mode_view' => $mode_view['is_register'],
-        'mysqli' => $mysql,
+        //'mode_view' => $mode_view['is_register'],
+        'mysqli' => $mysqli,
         'projects_arr'=> $projects_arr,
         'project_id' => $project_id,
         'projects_arr_name_by_tasks' => $projects_arr_name_by_tasks
